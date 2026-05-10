@@ -14,7 +14,7 @@ const PRE_CACHE = [
 // Install – pre‑cache the core files
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(PRE_CACHE))
+    caches.open(EcoSaver-v1.0.0).then(cache => cache.addAll(PRE_CACHE))
   );
   self.skipWaiting(); // activate immediately
 });
@@ -23,7 +23,7 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key)))
+      Promise.all(keys.filter(key => key !== EcoSaver-v1.0.0).map(key => caches.delete(key)))
     )
   );
   self.clients.claim();
@@ -40,7 +40,7 @@ self.addEventListener('fetch', event => {
         .then(response => {
           // Update the cache with the fresh copy
           const responseClone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(request, responseClone));
+          caches.open(EcoSaver-v1.0.0).then(cache => cache.put(request, responseClone));
           return response;
         })
         .catch(() => caches.match(request))
@@ -53,7 +53,7 @@ self.addEventListener('fetch', event => {
     caches.match(request).then(cached => {
       const fetchPromise = fetch(request).then(networkResponse => {
         if (networkResponse && networkResponse.status === 200) {
-          caches.open(CACHE_NAME).then(cache => cache.put(request, networkResponse.clone()));
+          caches.open(EcoSaver-v1.0.0).then(cache => cache.put(request, networkResponse.clone()));
         }
         return networkResponse;
       }).catch(() => cached);
