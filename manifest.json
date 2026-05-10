@@ -1,22 +1,22 @@
 {
   "name": "EcoSaver Pro",
   "short_name": "EcoSaver",
+  "description": "Energy tracker for Philippine households (ANECO)",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#0d2218",
   "theme_color": "#0d2218",
-  "description": "Track electricity usage and save money with ANECO breakdown.",
+  "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%231a3a2a' stroke='%238fd48c' stroke-width='4'/%3E%3Ctext x='50' y='72' text-anchor='middle' font-size='60' fill='%238fd48c'%3E🌿%3C/text%3E%3C/svg%3E",
+      "src": "icon-192.png",
       "sizes": "192x192",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "type": "image/png"
     },
     {
-      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%231a3a2a' stroke='%238fd48c' stroke-width='4'/%3E%3Ctext x='50' y='72' text-anchor='middle' font-size='60' fill='%238fd48c'%3E🌿%3C/text%3E%3C/svg%3E",
+      "src": "icon-512.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ]
