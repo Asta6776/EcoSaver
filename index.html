@@ -718,19 +718,32 @@ function getTotals() {
 }
 
 function calcANECO(kwhMo) {
-  const gen = kwhMo * 5.50;
-  const tx = kwhMo * 0.80;
-  const sysloss = kwhMo * 0.30;
-  const dist = kwhMo * 2.00;
-  const supply = kwhMo * 0.50;
-  const metering = 5.00;
-  const subtotal = gen + tx + sysloss + dist + supply + metering;
-  const vatBase = gen + tx + dist + supply;
-  const vat = vatBase * 0.12;
-  const fitAll = kwhMo * 0.05;
-  const uc = kwhMo * 0.15;
-  const total = subtotal + vat + fitAll + uc;
-  return { gen, tx, sysloss, dist, supply, metering, subtotal, vat, fitAll, uc, total };
+  const baseRates = {
+    generation: 7.9239,
+    transmission: 1.6588,
+    govTaxes: 0.8162,
+    govOthers: 0.4839,
+    distribution: 1.5372,
+  };
+  const baseTotal = 12.4200;
+
+  // Scale factor to match user's configured rate
+  const scale = state.rate / baseTotal;
+
+  const generationCharge = kwhMo * baseRates.generation * scale;
+  const transmissionCharge = kwhMo * baseRates.transmission * scale;
+  const governmentCharges = kwhMo * (baseRates.govTaxes + baseRates.govOthers) * scale;
+  const distributionCharge = kwhMo * baseRates.distribution * scale;
+  const totalAmount = kwhMo * state.rate;
+
+  return {
+    generation: generationCharge,
+    transmission: transmissionCharge,
+    government: governmentCharges,
+    distribution: distributionCharge,
+    total: totalAmount,
+    ratePerKwh: state.rate
+  };
 }
 
 function load() {
@@ -819,20 +832,15 @@ function renderHome() {
   if (kwh > 0) {
     aneco.style.display = 'block';
     const B = calcANECO(kwh);
-    document.getElementById('aneco-inner').innerHTML = `
-      <div class="aneco-label" style="margin-bottom:8px">ANECO Unbundled Estimate</div>
-      ${row('Generation (₱5.50/kWh)', B.gen)}
-      ${row('Transmission (₱0.80/kWh)', B.tx)}
-      ${row('System Loss (₱0.30/kWh)', B.sysloss)}
-      ${row('Distribution (₱2.00/kWh)', B.dist)}
-      ${row('Supply Charge (₱0.50/kWh)', B.supply)}
-      ${row('Metering Charge (fixed)', B.metering)}
-      <div class="aneco-row subtotal"><span>Subtotal</span><span class="r-val">${fmtCurrency(B.subtotal)}</span></div>
-      ${row('VAT (12%)', B.vat)}
-      ${row('FIT-All (₱0.05/kWh)', B.fitAll)}
-      ${row('Universal Charge (₱0.15/kWh)', B.uc)}
-      <div class="aneco-row total"><span>Total Estimated Bill</span><span class="r-val">${fmtCurrency(B.total)}</span></div>
-    `;
+document.getElementById('aneco-inner').innerHTML = `
+  <div class="aneco-label" style="margin-bottom:8px">ANECO Unbundled Estimate (April 2026 Rates)</div>
+  ${row('Generation (₱' + (7.9239 * state.rate / 12.42).toFixed(4) + '/kWh)', B.generation)}
+  ${row('Transmission (₱' + (1.6588 * state.rate / 12.42).toFixed(4) + '/kWh)', B.transmission)}
+  ${row('Govt Taxes & Others (₱' + ((0.8162+0.4839) * state.rate / 12.42).toFixed(4) + '/kWh)', B.government)}
+  ${row('Distribution (₱' + (1.5372 * state.rate / 12.42).toFixed(4) + '/kWh)', B.distribution)}
+  <div class="aneco-row total"><span>Total Estimated Bill</span><span class="r-val">${fmtCurrency(B.total)}</span></div>
+  <div class="aneco-row" style="margin-top:6px; color:var(--c6); opacity:0.6;"><span>Effective Rate</span><span class="r-val">₱${B.ratePerKwh.toFixed(4)} / kWh</span></div>
+`;
   } else {
     aneco.style.display = 'none';
   }
