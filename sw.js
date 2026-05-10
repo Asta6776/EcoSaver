@@ -1,23 +1,25 @@
-// Increment this version every time you update the app.
-const CACHE_VERSION = 'ecosaver-v1.0.0';
+// Increment this version every time you deploy an update!
+const CACHE_VERSION = 'ecosaver-v1.0.1';
 const CACHE_NAME = `static-${CACHE_VERSION}`;
 
 const PRE_CACHE = [
   '.',
   'index.html',
-  'manifest.json',
-  // Add other static assets if any (icons, CSS files, etc.)
+  'manifest.json'
+  // Add your icon files here if you want them pre-cached:
+  // 'icon-192.png',
+  // 'icon-512.png'
 ];
 
-// Install: pre‑cache core files
+// Install – pre‑cache the core files
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => cache.addAll(PRE_CACHE))
   );
-  self.skipWaiting(); // activate new SW immediately
+  self.skipWaiting(); // activate immediately
 });
 
-// Activate: delete old caches
+// Activate – delete old caches
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
@@ -27,16 +29,16 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// Fetch: network-first for HTML, cache-first for others
+// Fetch – network‑first for pages, cache‑first for assets
 self.addEventListener('fetch', event => {
   const { request } = event;
 
-  // For navigation requests (HTML), always network-first so the user gets the latest index.html
+  // For navigation (HTML) always try the network first → up‑to‑date page
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request)
         .then(response => {
-          // Update cache with fresh copy
+          // Update the cache with the fresh copy
           const responseClone = response.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(request, responseClone));
           return response;
@@ -46,7 +48,7 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // For everything else (icons, SVGs, fonts), cache-first with network fallback
+  // For everything else (icons, SVGs, fonts, API calls…), cache first, then network
   event.respondWith(
     caches.match(request).then(cached => {
       const fetchPromise = fetch(request).then(networkResponse => {
