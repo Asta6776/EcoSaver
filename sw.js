@@ -1,6 +1,6 @@
 // Increment this version every time you deploy an update!
 const CACHE_VERSION = 'ecosaver-v1.0.1';
-const CACHE_NAME = `static-${CACHE_VERSION}`;
+const CACHE_NAME = `static-${EcoSaver-v1.0.0}`;
 
 const PRE_CACHE = [
   '.',
